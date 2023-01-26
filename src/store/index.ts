@@ -2,6 +2,7 @@ import { createStore, createLogger } from 'vuex';
 import { coaches } from '@/store/modules/coaches';
 import { requests } from '@/store/modules/requests';
 import { RootState } from './types';
+import createPersistedState from 'vuex-persistedstate';
 
 export default createStore<RootState>({
   state() {
@@ -21,5 +22,8 @@ export default createStore<RootState>({
     requests,
   },
 
-  plugins: process.env.NODE_ENV === 'development' ? [createLogger()] : [],
+  plugins:
+    process.env.NODE_ENV === 'development'
+      ? [createLogger(), createPersistedState()]
+      : [],
 });

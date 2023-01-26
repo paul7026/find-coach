@@ -71,7 +71,6 @@ export default defineComponent({
   },
 
   created() {
-    console.log(this.$store.getters['coaches/coaches']);
     this.selectedCoach = this.$store.getters['coaches/coaches'].find(
       (coach: Coach) => coach.id === this.id
     );
