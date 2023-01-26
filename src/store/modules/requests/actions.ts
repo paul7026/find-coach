@@ -2,6 +2,7 @@ import { RootState } from '@/store/types';
 import { ActionTree } from 'vuex';
 import { RequestState } from './types';
 import { Request, RequestFormData } from '@/models/RequestsModel';
+import { fetchRequestsByCoachId } from '@/config';
 
 export const actions: ActionTree<RequestState, RootState> = {
   async contactCoach(context, payload: RequestFormData) {
@@ -10,13 +11,10 @@ export const actions: ActionTree<RequestState, RootState> = {
       message: payload.message,
     };
 
-    const response = await fetch(
-      `https://find-coach-894a4-default-rtdb.firebaseio.com/requests/${payload.coachId}.json`,
-      {
-        method: 'POST',
-        body: JSON.stringify(newRequest),
-      }
-    );
+    const response = await fetch(fetchRequestsByCoachId(payload.coachId), {
+      method: 'POST',
+      body: JSON.stringify(newRequest),
+    });
 
     const responseData = await response.json();
 
@@ -33,9 +31,9 @@ export const actions: ActionTree<RequestState, RootState> = {
 
   async fetchRequests(context) {
     const coachId = context.rootGetters.userId;
-    const response = await fetch(
-      `https://find-coach-894a4-default-rtdb.firebaseio.com/requests/${coachId}.json`
-    );
+
+    const response = await fetch(fetchRequestsByCoachId(coachId));
+
     const responseData = await response.json();
 
     if (!response.ok) {

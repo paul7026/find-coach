@@ -1,3 +1,4 @@
+import { ALL_COACHES, fetchCoachByUserId } from '@/config';
 import { Coach, CoachFormData } from '@/models/CoachesModel';
 import { RootState } from '@/store/types';
 import { ActionTree } from 'vuex';
@@ -6,13 +7,10 @@ import { CoachesState } from './types';
 export const actions: ActionTree<CoachesState, RootState> = {
   async registerCoach(context, payload: CoachFormData) {
     const userId: string = context.rootGetters.userId;
-    const response = await fetch(
-      `https://find-coach-894a4-default-rtdb.firebaseio.com/coaches/${userId}.json`,
-      {
-        method: 'PUT',
-        body: JSON.stringify(payload),
-      }
-    );
+    const response = await fetch(fetchCoachByUserId(userId), {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    });
 
     const responseData = await response.json();
 
@@ -28,9 +26,7 @@ export const actions: ActionTree<CoachesState, RootState> = {
       return;
     }
 
-    const response = await fetch(
-      'https://find-coach-894a4-default-rtdb.firebaseio.com/coaches.json'
-    );
+    const response = await fetch(ALL_COACHES);
 
     const responseData = await response.json();
 
