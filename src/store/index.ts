@@ -25,5 +25,5 @@ export default createStore<RootState>({
   plugins:
     process.env.NODE_ENV === 'development'
       ? [createLogger(), createPersistedState()]
-      : [],
+      : [createPersistedState()],
 });
