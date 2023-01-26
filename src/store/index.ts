@@ -1,4 +1,4 @@
-import { createStore } from 'vuex';
+import { createStore, createLogger } from 'vuex';
 import { coaches } from '@/store/modules/coaches';
 import { requests } from '@/store/modules/requests';
 import { RootState } from './types';
@@ -6,7 +6,7 @@ import { RootState } from './types';
 export default createStore<RootState>({
   state() {
     return {
-      userId: 'c3',
+      userId: 'c5',
     };
   },
 
@@ -20,4 +20,6 @@ export default createStore<RootState>({
     coaches,
     requests,
   },
+
+  plugins: process.env.NODE_ENV === 'development' ? [createLogger()] : [],
 });
