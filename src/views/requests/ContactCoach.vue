@@ -1,33 +1,25 @@
 <template>
   <form @submit.prevent="submitForm">
-    <div
-      class="form-control"
-      :class="{ invalid: !emailIsValid && email.isTouched }"
-    >
+    <div class="form-control" :class="{ invalid: v$.email.$error }">
       <label for="email">Your E-Mail</label>
       <input
         type="email"
         id="email"
-        v-model.trim="email.val"
-        @blur="email.isTouched = true"
+        v-model.trim="email"
+        @blur="v$.email.$touch"
       />
-      <p v-if="!emailIsValid && email.isTouched">Please enter a valid email</p>
+      <p v-if="v$.email.$error">Please enter a valid email</p>
     </div>
 
-    <div
-      class="form-control"
-      :class="{ invalid: !messageIsValid && message.isTouched }"
-    >
+    <div class="form-control" :class="{ invalid: v$.message.$error }">
       <label for="message">Message</label>
       <textarea
         id="message"
         rows="5"
-        v-model.trim="message.val"
-        @blur="message.isTouched = true"
+        v-model.trim="message"
+        @blur="v$.message.$touch"
       />
-      <p v-if="!messageIsValid && message.isTouched">
-        Please enter a non-empty message
-      </p>
+      <p v-if="v$.message.$error">Please enter a non-empty message</p>
     </div>
 
     <div class="actions">
@@ -38,49 +30,43 @@
 
 <script lang="ts">
 import BaseButton from '@/components/ui/BaseButton.vue';
+import { RequestFormData } from '@/models/RequestsModel';
+import useVuelidate from '@vuelidate/core';
+import { required, email } from '@vuelidate/validators';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
   components: { BaseButton },
-  data() {
+
+  setup() {
     return {
-      email: {
-        val: null as string | null,
-        isTouched: false,
-      },
-      message: {
-        val: null as string | null,
-        isTouched: false,
-      },
+      v$: useVuelidate(),
     };
   },
 
-  computed: {
-    emailIsValid(): boolean {
-      return !!this.email.val;
-    },
+  data() {
+    return {
+      email: '',
+      message: '',
+    };
+  },
 
-    messageIsValid(): boolean {
-      return !!this.message.val;
-    },
-
-    formIsValid(): boolean {
-      return this.emailIsValid && this.messageIsValid;
-    },
+  validations() {
+    return {
+      email: { required, email },
+      message: { required },
+    };
   },
 
   methods: {
     submitForm() {
-      this.email.isTouched = true;
-      this.message.isTouched = true;
-
-      if (this.formIsValid) {
-        const formData = {
-          email: this.email.val,
-          message: this.message.val,
-          coachId: this.$route.params.id,
+      this.v$.$validate();
+      if (!this.v$.$error) {
+        const formData: RequestFormData = {
+          email: this.email,
+          message: this.message,
+          coachId: this.$route.params.id as string,
         };
-
         this.$store.dispatch('requests/contactCoach', formData);
         this.$router.replace('/coaches');
       }

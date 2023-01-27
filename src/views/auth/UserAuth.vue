@@ -6,34 +6,26 @@
   <base-card>
     <base-spinner v-if="isLoading" />
     <form v-if="!isLoading" @submit.prevent="submitForm">
-      <div
-        class="form-control"
-        :class="{ invalid: !emailIsValid && email.isTouched }"
-      >
+      <div class="form-control" :class="{ invalid: v$.email.$error }">
         <label for="email">E-Mail</label>
         <input
           type="email"
           id="email"
-          v-model.trim="email.val"
-          @blur="email.isTouched = true"
+          v-model.trim="email"
+          @blur="v$.email.$touch"
         />
-        <p v-if="!emailIsValid && email.isTouched">
-          Please enter a valid email
-        </p>
+        <p v-if="v$.email.$error">Please enter a valid email</p>
       </div>
 
-      <div
-        class="form-control"
-        :class="{ invalid: !passwordIsValid && password.isTouched }"
-      >
+      <div class="form-control" :class="{ invalid: v$.password.$error }">
         <label for="password">Password</label>
         <input
           type="password"
           id="password"
-          v-model.trim="password.val"
-          @blur="password.isTouched = true"
+          v-model.trim="password"
+          @blur="v$.password.$touch"
         />
-        <p v-if="!passwordIsValid && password.isTouched">
+        <p v-if="v$.password.$error">
           Password must be greater than 6 characters.
         </p>
       </div>
@@ -50,20 +42,23 @@ import BaseButton from '@/components/ui/BaseButton.vue';
 import BaseCard from '@/components/ui/BaseCard.vue';
 import BaseDialog from '@/components/ui/BaseDialog.vue';
 import BaseSpinner from '@/components/ui/BaseSpinner.vue';
+import useVuelidate from '@vuelidate/core';
+import { required, email, minLength } from '@vuelidate/validators';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
   components: { BaseButton, BaseCard, BaseSpinner, BaseDialog },
+
+  setup() {
+    return {
+      v$: useVuelidate(),
+    };
+  },
+
   data() {
     return {
-      email: {
-        val: null as null | string,
-        isTouched: false,
-      },
-      password: {
-        val: null as null | string,
-        isTouched: false,
-      },
+      email: '',
+      password: '',
       mode: 'login',
       isLoading: false,
       error: null as string | null,
@@ -71,18 +66,6 @@ export default defineComponent({
   },
 
   computed: {
-    emailIsValid(): boolean {
-      return !!this.email.val && this.email.val.includes('@');
-    },
-
-    passwordIsValid(): boolean {
-      return !!this.password.val && this.password.val.length >= 6;
-    },
-
-    formIsValid(): boolean {
-      return this.emailIsValid && this.passwordIsValid;
-    },
-
     submitButtonCaption(): string {
       if (this.mode === 'login') {
         return 'Login';
@@ -100,17 +83,22 @@ export default defineComponent({
     },
   },
 
+  validations() {
+    return {
+      email: { required, email },
+      password: { required, minLengthValue: minLength(6) },
+    };
+  },
+
   methods: {
     async submitForm() {
-      this.email.isTouched = true;
-      this.password.isTouched = true;
-
-      if (this.formIsValid) {
+      this.v$.$validate();
+      if (!this.v$.$error) {
         this.isLoading = true;
 
         const actionPayload = {
-          email: this.email.val,
-          password: this.password.val,
+          email: this.email,
+          password: this.password,
         };
 
         try {

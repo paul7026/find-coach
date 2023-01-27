@@ -8,11 +8,11 @@ export interface Coach {
 }
 
 export interface CoachFormData {
-  firstName: string | null;
-  lastName: string | null;
-  description: string | null;
-  hourlyRate: number | null;
-  areas: string[] | null;
+  firstName: string;
+  lastName: string;
+  description: string;
+  hourlyRate: number;
+  areas: string[];
 }
 
 export interface activeFilters {

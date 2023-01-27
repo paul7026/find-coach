@@ -1,72 +1,52 @@
 <template>
   <form @submit.prevent="submitForm">
-    <div
-      class="form-control"
-      :class="{ invalid: !firstNameIsValid && firstName.isTouched }"
-    >
+    <div class="form-control" :class="{ invalid: v$.firstName.$error }">
       <label for="firstName">First name</label>
       <input
         type="text"
         id="firstName"
-        v-model.trim="firstName.val"
-        @blur="firstName.isTouched = true"
+        v-model.trim="firstName"
+        @blur="v$.firstName.$touch"
       />
-      <p v-if="!firstNameIsValid && firstName.isTouched">
-        First name must not be empty.
-      </p>
+      <p v-if="v$.firstName.$error">First name must not be empty</p>
     </div>
 
-    <div
-      class="form-control"
-      :class="{ invalid: !lastNameIsValid && lastName.isTouched }"
-    >
+    <div class="form-control" :class="{ invalid: v$.lastName.$error }">
       <label for="lastName">Last name</label>
       <input
         type="text"
         id="lastName"
-        v-model.trim="lastName.val"
-        @blur="lastName.isTouched = true"
+        v-model.trim="lastName"
+        @blur="v$.lastName.$touch"
       />
-      <p v-if="!lastNameIsValid && lastName.isTouched">
-        Last name must not be empty.
-      </p>
+      <p v-if="v$.lastName.$error">Last name must not be empty</p>
     </div>
 
-    <div
-      class="form-control"
-      :class="{ invalid: !descriptionIsValid && description.isTouched }"
-    >
+    <div class="form-control" :class="{ invalid: v$.description.$error }">
       <label for="description">Description</label>
       <textarea
         id="description"
         rows="5"
-        v-model.trim="description.val"
-        @blur="description.isTouched = true"
+        v-model.trim="description"
+        @blur="v$.description.$touch"
       />
-      <p v-if="!descriptionIsValid && description.isTouched">
-        Description must not be empty.
-      </p>
+      <p v-if="v$.description.$error">Description must not be empty</p>
     </div>
 
-    <div
-      class="form-control"
-      :class="{ invalid: !rateIsValid && rate.isTouched }"
-    >
+    <div class="form-control" :class="{ invalid: v$.rate.$error }">
       <label for="rate">Hourly Rate ($)</label>
       <input
         type="number"
         id="rate"
         min="0"
         max="1000"
-        v-model.trim="rate.val"
-        @blur="rate.isTouched = true"
+        v-model.trim="rate"
+        @blur="v$.rate.$touch"
       />
-      <p v-if="!rateIsValid && rate.isTouched">
-        Rate must be greater than 0 and less than 1000.
-      </p>
+      <p v-if="v$.rate.$error">Rate must be integer between 0 and 1000</p>
     </div>
 
-    <div class="form-control" :class="{ invalid: !areasIsValid }">
+    <div class="form-control" :class="{ invalid: v$.areas.$error }">
       <h3>Areas of Expertise</h3>
       <div>
         <label class="checkbox-label" for="frontend">
@@ -75,36 +55,24 @@
             type="checkbox"
             id="frontend"
             value="frontend"
-            v-model="areas.val"
+            v-model="areas"
           />
           <span></span>
         </label>
 
         <label class="checkbox-label" for="backend">
           Backend Development
-          <input
-            type="checkbox"
-            id="backend"
-            value="backend"
-            v-model="areas.val"
-          />
+          <input type="checkbox" id="backend" value="backend" v-model="areas" />
           <span></span>
         </label>
 
         <label class="checkbox-label" for="career">
           Career Advisory
-          <input
-            type="checkbox"
-            id="career"
-            value="career"
-            v-model="areas.val"
-          />
+          <input type="checkbox" id="career" value="career" v-model="areas" />
           <span></span>
         </label>
       </div>
-      <p v-if="!areasIsValid && areas.isTouched">
-        At least one expertise must be selected.
-      </p>
+      <p v-if="v$.areas.$error">At least one expertise must be selected</p>
     </div>
 
     <div class="actions">
@@ -114,6 +82,8 @@
 </template>
 
 <script lang="ts">
+import { useVuelidate } from '@vuelidate/core';
+import { required, integer, maxValue, minValue } from '@vuelidate/validators';
 import { CoachFormData } from '@/models/CoachesModel';
 import { defineComponent } from '@vue/runtime-core';
 import BaseButton from '../ui/BaseButton.vue';
@@ -121,80 +91,50 @@ import BaseButton from '../ui/BaseButton.vue';
 export default defineComponent({
   components: { BaseButton },
   emits: ['save-data'],
-  data() {
+
+  setup() {
     return {
-      firstName: {
-        val: null as null | string,
-        isTouched: false,
-      },
-      lastName: {
-        val: null as null | string,
-        isTouched: false,
-      },
-      description: {
-        val: null as null | string,
-        isTouched: false,
-      },
-      rate: {
-        val: null as null | number,
-        isTouched: false,
-      },
-      areas: {
-        val: [] as string[],
-        isTouched: false,
-      },
+      v$: useVuelidate(),
     };
   },
 
-  computed: {
-    firstNameIsValid(): boolean {
-      return !!this.firstName.val;
-    },
+  data() {
+    return {
+      firstName: '',
+      lastName: '',
+      description: '',
+      rate: null as number | null,
+      areas: [] as string[],
+    };
+  },
 
-    lastNameIsValid(): boolean {
-      return !!this.lastName.val;
-    },
-
-    descriptionIsValid(): boolean {
-      return !!this.description.val;
-    },
-
-    rateIsValid(): boolean {
-      return !!this.rate.val && this.rate.val > 0 && this.rate.val <= 1000;
-    },
-
-    areasIsValid(): boolean {
-      return this.areas.val.length !== 0;
-    },
-
-    formIsValid(): boolean {
-      return (
-        this.firstNameIsValid &&
-        this.lastNameIsValid &&
-        this.descriptionIsValid &&
-        this.rateIsValid &&
-        this.areasIsValid
-      );
-    },
+  validations() {
+    return {
+      firstName: { required },
+      lastName: { required },
+      description: { required },
+      rate: {
+        required,
+        integer,
+        maxValue: maxValue(1000),
+        minValue: minValue(0),
+      },
+      areas: { required },
+    };
   },
 
   methods: {
     submitForm() {
-      this.firstName.isTouched = true;
-      this.lastName.isTouched = true;
-      this.description.isTouched = true;
-      this.rate.isTouched = true;
-      this.areas.isTouched = true;
+      this.v$.$validate();
 
-      if (this.formIsValid) {
+      if (!this.v$.$error) {
         const formData: CoachFormData = {
-          firstName: this.firstName.val,
-          lastName: this.lastName.val,
-          description: this.description.val,
-          hourlyRate: this.rate.val,
-          areas: this.areas.val,
+          firstName: this.firstName,
+          lastName: this.lastName,
+          description: this.description,
+          hourlyRate: this.rate!,
+          areas: this.areas,
         };
-
         this.$emit('save-data', formData);
       }
     },
