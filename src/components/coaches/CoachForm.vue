@@ -56,11 +56,14 @@
       <input
         type="number"
         id="rate"
-        rows="5"
+        min="0"
+        max="1000"
         v-model.trim="rate.val"
         @blur="rate.isTouched = true"
       />
-      <p v-if="!rateIsValid && rate.isTouched">Rate must be greater than 0.</p>
+      <p v-if="!rateIsValid && rate.isTouched">
+        Rate must be greater than 0 and less than 1000.
+      </p>
     </div>
 
     <div class="form-control" :class="{ invalid: !areasIsValid }">
@@ -157,7 +160,7 @@ export default defineComponent({
     },
 
     rateIsValid(): boolean {
-      return !!this.rate.val && this.rate.val > 0;
+      return !!this.rate.val && this.rate.val > 0 && this.rate.val <= 1000;
     },
 
     areasIsValid(): boolean {
