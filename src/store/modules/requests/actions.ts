@@ -2,7 +2,7 @@ import { RootState } from '@/store/types';
 import { ActionTree } from 'vuex';
 import { RequestState } from './types';
 import { Request, RequestFormData } from '@/models/RequestsModel';
-import { fetchRequestsByCoachId } from '@/config';
+import { contactCoach, fetchRequestsByCoachId } from '@/config';
 
 export const actions: ActionTree<RequestState, RootState> = {
   async contactCoach(context, payload: RequestFormData) {
@@ -11,7 +11,7 @@ export const actions: ActionTree<RequestState, RootState> = {
       message: payload.message,
     };
 
-    const response = await fetch(fetchRequestsByCoachId(payload.coachId), {
+    const response = await fetch(contactCoach(payload.coachId), {
       method: 'POST',
       body: JSON.stringify(newRequest),
     });
@@ -32,7 +32,9 @@ export const actions: ActionTree<RequestState, RootState> = {
   async fetchRequests(context) {
     const coachId = context.rootGetters.userId;
 
-    const response = await fetch(fetchRequestsByCoachId(coachId));
+    const token = context.rootGetters.token;
+
+    const response = await fetch(fetchRequestsByCoachId(coachId, token));
 
     const responseData = await response.json();
 

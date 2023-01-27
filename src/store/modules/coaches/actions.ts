@@ -7,7 +7,10 @@ import { CoachesState } from './types';
 export const actions: ActionTree<CoachesState, RootState> = {
   async registerCoach(context, payload: CoachFormData) {
     const userId: string = context.rootGetters.userId;
-    const response = await fetch(fetchCoachByUserId(userId), {
+
+    const token = context.rootGetters.token;
+
+    const response = await fetch(fetchCoachByUserId(userId, token), {
       method: 'PUT',
       body: JSON.stringify(payload),
     });

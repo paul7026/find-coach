@@ -22,7 +22,7 @@ export const getters: GetterTree<CoachesState, RootState> = {
     });
   },
 
-  isCoach(state, getters, rootState, rootGetters): boolean {
+  isCoach(state, _, _2, rootGetters): boolean {
     const coaches = state.coaches;
     const userId = rootGetters.userId;
     return coaches.some((coach) => coach.id === userId);
