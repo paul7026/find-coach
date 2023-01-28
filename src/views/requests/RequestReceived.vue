@@ -27,6 +27,7 @@ import BaseCard from '@/components/ui/BaseCard.vue';
 import BaseDialog from '@/components/ui/BaseDialog.vue';
 import BaseSpinner from '@/components/ui/BaseSpinner.vue';
 import { defineComponent } from 'vue';
+import { mapGetters } from 'vuex';
 
 export default defineComponent({
   components: { BaseCard, RequestItem, BaseDialog, BaseSpinner },
@@ -38,13 +39,10 @@ export default defineComponent({
   },
 
   computed: {
-    receivedRequests(): Request[] {
-      return this.$store.getters['requests/requests'];
-    },
-
-    hasRequests(): boolean {
-      return this.$store.getters['requests/hasRequests'];
-    },
+    ...mapGetters({
+      receivedRequests: 'requests/requests',
+      hasRequests: 'requests/hasRequests',
+    }),
   },
 
   created() {

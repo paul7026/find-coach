@@ -20,19 +20,24 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import { mapActions, mapGetters } from 'vuex';
 import BaseButton from '../ui/BaseButton.vue';
 
 export default defineComponent({
   components: { BaseButton },
   computed: {
-    isLoggedIn(): boolean {
-      return this.$store.getters.isAuthenticated;
-    },
+    ...mapGetters({
+      isLoggedIn: 'isAuthenticated',
+    }),
   },
 
   methods: {
+    ...mapActions({
+      logoutAction: 'logout',
+    }),
+
     logout() {
-      this.$store.dispatch('logout');
+      this.logoutAction();
       this.$router.replace('/coaches');
     },
   },

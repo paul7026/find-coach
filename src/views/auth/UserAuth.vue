@@ -45,6 +45,7 @@ import BaseSpinner from '@/components/ui/BaseSpinner.vue';
 import useVuelidate from '@vuelidate/core';
 import { required, email, minLength } from '@vuelidate/validators';
 import { defineComponent } from 'vue';
+import { mapActions } from 'vuex';
 
 export default defineComponent({
   components: { BaseButton, BaseCard, BaseSpinner, BaseDialog },
@@ -91,6 +92,11 @@ export default defineComponent({
   },
 
   methods: {
+    ...mapActions({
+      login: 'login',
+      signup: 'signup',
+    }),
+
     async submitForm() {
       this.v$.$validate();
       if (!this.v$.$error) {
@@ -103,8 +109,8 @@ export default defineComponent({
 
         try {
           this.mode === 'login'
-            ? await this.$store.dispatch('login', actionPayload)
-            : await this.$store.dispatch('signup', actionPayload);
+            ? await this.login(actionPayload)
+            : await this.signup(actionPayload);
 
           const redirectUrl = '/' + (this.$route.query.redirect || 'coaches');
 

@@ -12,7 +12,7 @@ Teacher data is updated in 1 minute increments, you can click the refresh button
 
 ## Application stack technology
 
-VUE 3, VUEX 4, TS, Vue Router, sass preprocessor...
+VUE 3, VUEX 4, TS, Vue Router, sass preprocessor, Vuelidate...
 
 Unit tests will be added soon
 

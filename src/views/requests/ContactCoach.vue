@@ -34,6 +34,7 @@ import { RequestFormData } from '@/models/RequestsModel';
 import useVuelidate from '@vuelidate/core';
 import { required, email } from '@vuelidate/validators';
 import { defineComponent } from 'vue';
+import { mapActions } from 'vuex';
 
 export default defineComponent({
   components: { BaseButton },
@@ -59,6 +60,10 @@ export default defineComponent({
   },
 
   methods: {
+    ...mapActions({
+      contactCoach: 'requests/contactCoach',
+    }),
+
     submitForm() {
       this.v$.$validate();
       if (!this.v$.$error) {
@@ -67,7 +72,7 @@ export default defineComponent({
           message: this.message,
           coachId: this.$route.params.id as string,
         };
-        this.$store.dispatch('requests/contactCoach', formData);
+        this.contactCoach(formData);
         this.$router.replace('/coaches');
       }
     },

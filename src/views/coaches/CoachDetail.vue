@@ -35,6 +35,7 @@ import BaseButton from '@/components/ui/BaseButton.vue';
 import BaseCard from '@/components/ui/BaseCard.vue';
 import { Coach } from '@/models/CoachesModel';
 import { defineComponent } from 'vue';
+import { mapGetters } from 'vuex';
 
 export default defineComponent({
   components: { BaseCard, BaseButton, BaseBadge },
@@ -49,6 +50,10 @@ export default defineComponent({
   },
 
   computed: {
+    ...mapGetters({
+      coaches: 'coaches/coaches',
+    }),
+
     fullName() {
       return this.selectedCoach?.firstName + ' ' + this.selectedCoach?.lastName;
     },
@@ -71,7 +76,7 @@ export default defineComponent({
   },
 
   created() {
-    this.selectedCoach = this.$store.getters['coaches/coaches'].find(
+    this.selectedCoach = this.coaches.find(
       (coach: Coach) => coach.id === this.id
     );
   },

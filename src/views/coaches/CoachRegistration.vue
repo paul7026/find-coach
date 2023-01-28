@@ -13,13 +13,18 @@ import BaseCard from '@/components/ui/BaseCard.vue';
 import { CoachFormData } from '@/models/CoachesModel';
 
 import { defineComponent } from 'vue';
+import { mapActions } from 'vuex';
 
 export default defineComponent({
   components: { BaseCard, CoachForm },
 
   methods: {
+    ...mapActions({
+      registerCoach: 'coaches/registerCoach',
+    }),
+
     saveData(formData: CoachFormData) {
-      this.$store.dispatch('coaches/registerCoach', formData);
+      this.registerCoach(formData);
       this.$router.replace('/coaches');
     },
   },

@@ -47,9 +47,9 @@ import BaseButton from '@/components/ui/BaseButton.vue';
 import BaseSpinner from '@/components/ui/BaseSpinner.vue';
 import BaseCard from '@/components/ui/BaseCard.vue';
 import { activeFilters, Coach } from '@/models/CoachesModel';
-
 import { defineComponent } from 'vue';
 import BaseDialog from '@/components/ui/BaseDialog.vue';
+import { mapGetters } from 'vuex';
 
 export default defineComponent({
   components: {
@@ -74,20 +74,14 @@ export default defineComponent({
   },
 
   computed: {
-    isLoggedIn(): boolean {
-      return this.$store.getters.isAuthenticated;
-    },
+    ...mapGetters({
+      isLoggedIn: 'isAuthenticated',
+      hasCoaches: 'coaches/hasCoaches',
+      isCoach: 'coaches/isCoach',
+    }),
 
     coaches(): Coach[] {
       return this.$store.getters['coaches/filteredCoaches'](this.activeFilters);
-    },
-
-    hasCoaches(): boolean {
-      return !this.isLoading && this.$store.getters['coaches/hasCoaches'];
-    },
-
-    isCoach(): boolean {
-      return this.$store.getters['coaches/isCoach'];
     },
   },
 
