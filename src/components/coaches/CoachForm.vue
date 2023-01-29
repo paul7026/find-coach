@@ -49,28 +49,32 @@
     <div class="form-control" :class="{ invalid: v$.areas.$error }">
       <h3>Areas of Expertise</h3>
       <div>
-        <label class="checkbox-label" for="frontend">
+        <base-checkbox
+          class="checkbox"
+          label="frontend"
+          value="frontend"
+          v-model="areas"
+        >
           Frontend Development
-          <input
-            type="checkbox"
-            id="frontend"
-            value="frontend"
-            v-model="areas"
-          />
-          <span></span>
-        </label>
+        </base-checkbox>
 
-        <label class="checkbox-label" for="backend">
+        <base-checkbox
+          class="checkbox"
+          label="backend"
+          value="backend"
+          v-model="areas"
+        >
           Backend Development
-          <input type="checkbox" id="backend" value="backend" v-model="areas" />
-          <span></span>
-        </label>
+        </base-checkbox>
 
-        <label class="checkbox-label" for="career">
+        <base-checkbox
+          class="checkbox"
+          label="career"
+          value="career"
+          v-model="areas"
+        >
           Career Advisory
-          <input type="checkbox" id="career" value="career" v-model="areas" />
-          <span></span>
-        </label>
+        </base-checkbox>
       </div>
       <p v-if="v$.areas.$error">At least one expertise must be selected</p>
     </div>
@@ -87,9 +91,10 @@ import { required, integer, maxValue, minValue } from '@vuelidate/validators';
 import { CoachFormData } from '@/models/CoachesModel';
 import { defineComponent } from '@vue/runtime-core';
 import BaseButton from '../ui/BaseButton.vue';
+import BaseCheckbox from '../ui/BaseCheckbox.vue';
 
 export default defineComponent({
-  components: { BaseButton },
+  components: { BaseButton, BaseCheckbox },
   emits: ['save-data'],
 
   setup() {
@@ -174,48 +179,8 @@ h3 {
   font-size: 1rem;
 }
 
-.checkbox-label {
+.checkbox {
   margin-bottom: 1rem;
-  position: relative;
-  padding-left: 30px;
-  cursor: pointer;
-
-  input {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-
-  span {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 20px;
-    height: 20px;
-    background-color: #ddd;
-    transition: 0.2s background-color;
-    &:after {
-      content: '';
-      position: absolute;
-      display: none;
-      left: 6px;
-      top: 2px;
-      width: 4px;
-      height: 10px;
-      border: solid white;
-      border-width: 0 3px 3px 0;
-      transform: rotate(45deg);
-    }
-  }
-}
-
-input:checked ~ span {
-  background-color: rgb(99, 93, 93);
-}
-
-label input:checked ~ span:after {
-  display: block;
 }
 
 .actions {
